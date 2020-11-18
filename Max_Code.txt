@@ -1,0 +1,103 @@
+#*********************
+#code by Max Lauve
+
+
+cln_songs=song_df[song_df['dB']>-20]
+
+#*****************************************
+
+cols=['bpm', 'nrgy', 'dnce', 'dB', 'live', 'val', 'dur', 'acous', 'spch']
+years=song_df['year'].unique()
+
+songs2010=cln_songs[cln_songs['year']==2010]
+songs2011=cln_songs[cln_songs['year']==2011]
+songs2012=cln_songs[cln_songs['year']==2012]
+songs2013=cln_songs[cln_songs['year']==2013]
+songs2014=cln_songs[cln_songs['year']==2014]
+songs2015=cln_songs[cln_songs['year']==2015]
+songs2016=cln_songs[cln_songs['year']==2016]
+songs2017=cln_songs[cln_songs['year']==2017]
+songs2018=cln_songs[cln_songs['year']==2018]
+songs2019=cln_songs[cln_songs['year']==2019]
+
+p_values={'bpm': [],
+         'nrgy': [],
+         'dnce': [],
+         'dB': [],
+         'live': [],
+         'val': [],
+         'dur': [],
+         'acous': [],
+         'spch': []
+         }
+
+cols_of_interest = []
+
+
+print("P-Values")
+print("=============")
+
+for x in cols:
+    data={'2010': songs2010[x],
+         '2011': songs2011[x],
+         '2012': songs2012[x], 
+         '2013': songs2013[x],
+         '2014': songs2014[x],
+         '2015': songs2015[x],
+         '2016': songs2016[x],
+         '2017': songs2017[x],
+         '2018': songs2018[x],
+         '2019': songs2019[x]
+         }
+    
+    
+    
+    df=pd.DataFrame(data)
+    
+    anova_x=stats.f_oneway(songs2010[x],
+                          songs2011[x],
+                          songs2012[x],
+                          songs2013[x],
+                          songs2014[x],
+                          songs2015[x],
+                          songs2016[x],
+                          songs2017[x],
+                          songs2018[x],
+                          songs2019[x]
+                          )
+    print(f'{x}: {anova_x[1]}')
+    
+    if anova_x[1]<0.05: cols_of_interest.append(x)
+        
+    
+    for y in range(len(years)-1):
+        tt_result=stats.ttest_ind(df.iloc[:,y], df.iloc[:,y+1], equal_var=False, nan_policy='omit')
+        p_values[x].append(tt_result[1])
+
+
+pv_df=pd.DataFrame(p_values)
+
+pv_df=pv_df[cols_of_interest]
+
+#********************************************
+
+year_ranges=['2010-2011', '2011-2012', '2012-2013', '2013-2014', '2014-2015', '2015-2016', '2016-2017', '2017-2018', '2018-2019']
+
+pv_df.index=year_ranges
+pv_df
+
+
+
+#*******************************
+by_year=cln_songs.groupby('year')
+for x in cols_of_interest:
+    var=by_year[x].mean()
+    
+    plt.figure
+    plt.plot(var.index, var)
+    plt.title(f'{x} by year')
+    plt.ylabel(x)
+    plt.grid()
+    plt.show()
+
+#********************
