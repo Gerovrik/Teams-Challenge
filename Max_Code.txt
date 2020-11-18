@@ -1,6 +1,21 @@
 #*********************
 #code by Max Lauve
 
+#******************************
+
+import pandas as pd
+import os as _dir
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+%matplotlib inline
+
+
+#***************************************
+
+song_df=pd.read_csv("C:\\Users\\pmaxl\\OneDrive\\Desktop\\Group-Projects\\Teams-Challenge\\Resources\\top10s.csv",encoding="ISO-8859-1")
+
+#******************************************
+
 
 cln_songs=song_df[song_df['dB']>-20]
 
