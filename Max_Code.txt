@@ -1,5 +1,5 @@
 #*********************
-#code by Max Lauve
+#start max_code
 
 #******************************
 
@@ -20,7 +20,6 @@ song_df=pd.read_csv("C:\\Users\\pmaxl\\OneDrive\\Desktop\\Group-Projects\\Teams-
 cln_songs=song_df[song_df['dB']>-20]
 
 #*****************************************
-
 cols=['bpm', 'nrgy', 'dnce', 'dB', 'live', 'val', 'dur', 'acous', 'spch']
 years=song_df['year'].unique()
 
@@ -108,11 +107,121 @@ by_year=cln_songs.groupby('year')
 for x in cols_of_interest:
     var=by_year[x].mean()
     
+    (slope, intercept, rvalue, pvalue, stderr) = stats.linregress(var.index, var)
+    regress_values = var.index * slope + intercept
+    
     plt.figure
-    plt.plot(var.index, var)
+    plt.plot(var.index, var, color='darkblue')
+    plt.plot(var.index,regress_values, color="firebrick")
     plt.title(f'{x} by year')
     plt.ylabel(x)
     plt.grid()
+    plt.savefig(f'C:\\Users\\pmaxl\\OneDrive\\Desktop\\Group-Projects\\Teams-Challenge\\images\\{x}_by_year.png')
     plt.show()
+    line_eq = "slope = " + str(round(slope,2)) + "x"
+    print(line_eq)
+
+    correlation = stats.pearsonr(var.index, var)
+    print(f'r= {correlation[0]}')
 
 #********************
+
+pct_change={
+           'nrgy': [],
+           'dB': [],
+           'val': [],
+           'dur': [],
+           'acous': []
+           }
+
+mean_by_year=by_year.mean()
+
+for x in range(2010, 2019):
+    for y in cols_of_interest:
+        change=mean_by_year.loc[(x+1),y] - mean_by_year.loc[x, y]
+        changepct=(change/mean_by_year.loc[x,y])*100
+        changepct=round(changepct, 2)
+        pct_change[y].append(changepct)
+
+        
+pc_df=pd.DataFrame(pct_change)
+pc_df.index=year_ranges
+pc_df
+
+
+#****************************************
+
+
+for y in cols_of_interest:
+    plt.bar(x=pc_df.index, height=pc_df[y])
+    plt.ylabel("percent change")
+    plt.title(f'Percent Change in {y}')
+    plt.xticks(rotation=90)
+    plt.show()
+
+avg_pct_change={'Category': [],
+               'Average Change by Year': []}
+
+for x in cols_of_interest:
+    avg_pct_change['Category'].append(x)
+    
+    avg_change=pc_df[x].mean()
+    
+    avg_pct_change['Average Change by Year'].append(avg_change)
+    
+apc_df=pd.DataFrame(avg_pct_change)
+
+apc_df
+
+#******************************************
+
+colors=[]
+
+for x in range(len(apc_df)):
+    if apc_df.loc[x, 'Average Change by Year']>0:
+        colors.append('darkblue')
+    else:
+        colors.append('firebrick')
+    
+
+
+
+
+fig, (ax, ax2) = plt.subplots(2, 1, sharex=True)
+
+ax.bar(x=apc_df['Category'],
+       height= abs(apc_df['Average Change by Year']),
+       color=colors)
+
+ax2.bar(x=apc_df['Category'],
+       height= abs(apc_df['Average Change by Year']),
+       color=colors)
+
+ax.set_ylim(18, 20)
+ax2.set_ylim(0, 3)
+
+ax.spines['bottom'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax.xaxis.tick_top()
+ax.tick_params(labeltop=False)  
+ax2.xaxis.tick_bottom()
+
+d = .01  
+kwargs = dict(transform=ax.transAxes, color='k', clip_on=False)
+ax.plot((-d, +d), (-d, +d), **kwargs)        
+ax.plot((1 - d, 1 + d), (-d, +d), **kwargs)  
+
+kwargs.update(transform=ax2.transAxes)  
+ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)  
+ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  
+
+plt.savefig(f'C:\\Users\\pmaxl\\OneDrive\\Desktop\\Group-Projects\\Teams-Challenge\\images\\Percent_change.png')
+
+plt.show()
+
+
+#***********************************
+
+#end max_code
+
+#*************************
