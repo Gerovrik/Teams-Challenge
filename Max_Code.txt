@@ -169,7 +169,7 @@ for x in range(2010, 2019):
         change=mean_by_year.loc[(x+1),y] - mean_by_year.loc[x, y]
         
         #divide by x and multiply by 100 to get %
-        changepct=(change/mean_by_year.loc[x,y])*100
+        changepct=(change/abs(mean_by_year.loc[x,y]))*100
         changepct=round(changepct, 2)
         pct_change[y].append(changepct)
 
