@@ -110,20 +110,20 @@ for x in cols_of_interest:
     (slope, intercept, rvalue, pvalue, stderr) = stats.linregress(var.index, var)
     regress_values = var.index * slope + intercept
     
-    plt.figure
+    
     plt.plot(var.index, var, color='darkblue')
     plt.plot(var.index,regress_values, color="firebrick")
     plt.title(f'{x} by year')
     plt.ylabel(x)
     plt.grid()
+    line_eq = "slope = " + str(round(slope,2)) + "x"
+    correlation = stats.pearsonr(var.index, var)
+    plt.annotate(f'r= {round(correlation[0], 4)}', (2012.5, var.max()), size=12)
+    plt.annotate(line_eq, (2015, var.max()), size=12)
     plt.savefig(f'C:\\Users\\pmaxl\\OneDrive\\Desktop\\Group-Projects\\Teams-Challenge\\images\\{x}_by_year.png')
     plt.show()
-    line_eq = "slope = " + str(round(slope,2)) + "x"
-    print(line_eq)
-
-    correlation = stats.pearsonr(var.index, var)
-    print(f'r= {correlation[0]}')
-
+    
+    
 #********************
 
 pct_change={
