@@ -1,0 +1,190 @@
+bpm=clean_df['bpm']
+eng=clean_df['nrgy']
+pop=clean_df['pop']
+
+#######################################
+# Generate graph with corr, and slope for BPM and Energy
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(bpm,eng)
+regress_values=bpm * slope + intercept
+
+plt.xlabel("BPM Rating")
+plt.ylabel("Energy Rating")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(bpm,eng, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(bpm,regress_values,"r-")
+plt.annotate(line_eq,(10,10),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+
+#######################################
+### No correlation between the Beats per minute and energy rating
+
+   No correlation when compared as a whole. Not group by year
+#######################################
+# Generate graph with corr, and slope for BPM and Popularity
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(bpm,pop)
+regress_values=bpm * slope + intercept
+
+plt.xlabel("BPM Rating")
+plt.ylabel("POP Rating")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(bpm,eng, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(bpm,regress_values,"r-")
+plt.annotate(line_eq,(10,10),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+
+#######################################
+# Generate graph with corr, and slope for Energy and Popularity
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(eng,pop)
+regress_values=bpm * slope + intercept
+
+plt.xlabel("Energy Rating")
+plt.ylabel("POP Rating")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(bpm,eng, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(bpm,regress_values,"r-")
+plt.annotate(line_eq,(10,10),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+
+
+#######################################
+### Scatter plots show no significant correlation between groups 
+
+Data maybe too broad so group by year to find any correlation.
+
+#######################################
+
+#######################################
+# Correlation dataframe for presentation
+song_engy_pop=round(st.pearsonr(eng,pop)[0],4)
+song_engy_bpm=round(st.pearsonr(bpm,eng)[0],4)
+song_bpm_pop=round(st.pearsonr(bpm,pop)[0],4)
+
+#######################################
+#Create the dataframe
+null_corr_df=pd.DataFrame({'BPM vs. Energy':[song_engy_bpm],
+                      'BPM vs. Popularity':[song_bpm_pop],
+                      'Energy vs. Popularity':[song_engy_pop],
+                     },index=['Correlation Values:'])
+null_corr_df
+
+#######################################
+Groupby year to provide smaller sample size
+
+#######################################
+#Groupby year and set variables for correlations
+years_df=clean_df.groupby(['year'])
+#years_df.head()
+bpm_year=years_df['bpm'].mean()
+engy_year=years_df['nrgy'].mean()
+pop_year=years_df['pop'].mean()
+
+#######################################
+#Run a correaltion test
+corr_bpm_engy=st.pearsonr(bpm_year,engy_year)
+print(f'Correlation of bpm and energy is {round(corr_bpm_engy[0],4)}')
+corr_bpm_pop=st.pearsonr(bpm_year,pop_year)
+print(f'Correlation of bpm and popularity is {round(corr_bpm_pop[0],4)}')
+corr_engy_pop=st.pearsonr(engy_year,pop_year)
+print(f'Correlation of energy and popularity is {round(corr_engy_pop[0],4)}')
+
+#######################################
+#Create variables for dataframe
+bpm_eng=round(corr_bpm_engy[0],4)
+bpm_pop=round(corr_bpm_pop[0],4)
+engy_pop=round(corr_engy_pop[0],4)
+
+#######################################
+#Create dataframe
+Corr_df=pd.DataFrame({'BPM vs.Energy':[bpm_eng],
+                      'BPM and Popularity':[bpm_pop],
+                      'Energy and Popularity':[engy_pop],
+                     },index=['Correlation Values:'])
+
+Corr_df
+
+#######################################
+### A correlation exist between BPM vs. Popularity, and BPM vs. Energy with a smaller sample size.
+
+Wanting to explore the relationship between BPM and Popularity
+
+#######################################
+#create dataframe for the boxplot
+yearavg=pd.DataFrame({'BPM Avgs':bpm_year,'Energy Avgs':engy_year,'Popularity Avgs':pop_year})
+
+#######################################
+#create box plot
+yearavg.boxplot()
+plt.show()
+
+#######################################
+A box and whisker to see how far apart the values lie
+
+#######################################
+# Generate graph with corr, and slope for BPM and Popularity
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(bpm_year,pop_year)
+regress_values=bpm_year * slope + intercept
+
+plt.xlabel("BPM")
+plt.ylabel("POP Rating")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(bpm_year,pop_year, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(bpm_year,regress_values,"r-")
+plt.annotate(line_eq,(114,80),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+#######################################
+# Generate graph with corr, and slope for BPM and Popularity
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(bpm_year,pop_year)
+regress_values=bpm_year * slope + intercept
+
+plt.xlabel("BPM")
+plt.ylabel("POP Rating")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(bpm_year,pop_year, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(bpm_year,regress_values,"r-")
+plt.annotate(line_eq,(114,80),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+
+#######################################
+The difference between graphs are the switching the x and y
+
+#######################################
+# Generate graph with corr, and slope for Energy and Popularity. Same Graph just switch the x and y axis values
+(slope, intercept, rvalue, pvalue, stderr)=st.linregress(pop_year,bpm_year)
+regress_values=pop_year * slope + intercept
+
+plt.xlabel("Popularity Rating")
+plt.ylabel("Beats per minute")
+line_eq="y="+ str(round(slope,2)) + "x +" +str(round(intercept,2))
+plt.scatter(pop_year,bpm_year, marker="o", facecolors="blue", edgecolors="black")
+plt.plot(pop_year,regress_values,"r-")
+plt.annotate(line_eq,(70,120),fontsize=15,color="red")
+print(f'The r-value is:{round(rvalue,3)}')
+plt.show()
+
+#######################################
+
+
+#######################################
+
+#Calculate the Critical Value
+crit_val=st.chi2.ppf(q=0.95, df=9)
+critical_value=pd.DataFrame({'Critical Value':[crit_val]},index=['Results:'])
+critical_value
+
+#######################################
+#Calculate the Chi-Square and assign it a value 
+#st.chisquare(pop_year,bpm_year)
+chi=st.chisquare(pop_year,bpm_year)
+chi
+
+#######################################
+#Create chi square
+Chi_df=pd.DataFrame({'Chi-Square Results':chi},index=['Statistic:','P-Value:'])
+Chi_df
+
+#######################################
